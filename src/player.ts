@@ -55,6 +55,6 @@ player.onUpdate(() => {
 
 // When a player hit an enemy, destroy the player
 player.onCollide("enemy", () => {
-	k.addKaboom(player.pos)
-	player.destroy()
+	// k.addKaboom(player.pos)
+	// player.destroy()
 })
