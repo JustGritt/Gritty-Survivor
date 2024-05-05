@@ -1,4 +1,4 @@
-import { k } from "./kaboomContext";
+import { k } from "../kaboomContext";
 
 let score = 0;
 
@@ -9,6 +9,7 @@ export function increaseScore() {
 
 export const scoreLabel = k.add([
     k.text(score.toString()),
-    k.pos(12, 12),
+    k.pos(32, 500),
+    k.fixed(),
     "score"
 ]);
