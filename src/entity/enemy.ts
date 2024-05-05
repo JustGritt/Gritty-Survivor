@@ -1,7 +1,9 @@
-import { k } from "./kaboomContext";
+import { k } from "../kaboomContext";
 import { player } from "./player";
-import { increaseScore } from "./score";
-import { ENEMY_HEALTH, ENEMY_SPEED, ENEMY_MAX_COUNT } from './contants';
+import { increaseScore } from "../utils/score";
+import { ENEMY_HEALTH, ENEMY_SPEED, ENEMY_MAX_COUNT } from '../utils/contants';
+import { increaseXP } from "../utils/experience";
+import { initHealthBar } from "../utils/health";
 
 k.loadSprite("enemy", "./sprites/ghosty.png");
 
@@ -20,20 +22,31 @@ export function addEnemy() {
         k.area(),
         k.anchor("center"),
         k.state("move", [ "idle", "move" ]),
+        k.health(ENEMY_HEALTH),
         "enemy",
-        {
-            health: ENEMY_HEALTH,
-            maxHealth: ENEMY_HEALTH
-        }
     ]);
 
-    const hpBar = enemy.add([
-        k.rect(40, 8),
-        k.color(0, 255, 0),
-        k.pos(-20, -40), // Adjust the position so the HP bar is still above the enemy
-        k.anchor('left'),
-        "hpBar"
-    ]);
+    const enemyHealthBar = initHealthBar(enemy, 50);
+
+    // const healthBar = enemy.add([
+    //     k.rect(40, 8),
+    //     k.pos(-20, -40),
+    //     k.anchor('left'),
+    //     k.color(0, 255, 0),
+    //     "healthBar"
+    // ]);
+
+    function hurtEnemy(amount: number) {
+        k.addKaboom(enemy.pos)
+
+        if (enemy.hp() <= 0) {
+            // player.destroy();
+            return
+        }
+        enemy.hurt(amount);
+        // Update health bar width and color
+        // updateHealthBar(enemyHealthBar, amount);
+    }
 
     enemy.onStateEnter("idle", async () => {
         await k.wait(0.5)
@@ -53,23 +66,13 @@ export function addEnemy() {
 
     enemy.onCollide("bullet", (bullet) => {
         k.destroy(bullet)
-        enemy.health--;
-        hpBar.width = (enemy.health / enemy.maxHealth) * 40;
 
-
-        if (enemy.health / enemy.maxHealth > 0.5) {
-            hpBar.color = k.rgb(0, 255, 0); // Green if health is more than 50%
-        } else if (enemy.health / enemy.maxHealth > 0.25) {
-            hpBar.color = k.rgb(255, 255, 0); // Yellow if health is between 25% and 50%
-        } else {
-            hpBar.color = k.rgb(255, 0, 0); // Red if health is less than 25%
-        }
-
-        if (enemy.health <= 0) { // If the enemy's health reaches zero, destroy the enemy
+        hurtEnemy(10)
+        if (enemy.hp() <= 0) {
             k.destroy(enemy)
             k.addKaboom(bullet.pos)
             enemyCount--;
-
+            increaseXP()
             increaseScore()
         }
     })
