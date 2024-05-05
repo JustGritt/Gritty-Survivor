@@ -1,8 +1,6 @@
 import { k } from "../kaboomContext";
 import { player } from "./player";
-import { increaseScore } from "../utils/score";
 import { ENEMY_HEALTH, ENEMY_SPEED, ENEMY_MAX_COUNT } from '../utils/contants';
-import { increaseXP } from "../utils/experience";
 
 k.loadSprite("enemy", "./sprites/ghosty.png");
 
