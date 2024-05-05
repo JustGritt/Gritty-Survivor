@@ -87,6 +87,9 @@ export function spawnEnemy() {
         if (enemy.health <= 0) {
             k.destroy(enemy)
             k.addKaboom(enemy.pos)
+
+            // Update score and experience
+            player.experience += 10;
         }
 
         // Update enemy health bar

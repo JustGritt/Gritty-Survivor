@@ -1,5 +1,5 @@
 import { k } from "../kaboomContext";
-import { player } from "../entities/player";
+import { player } from '../entities/player';
 
 export function mousePosition(y: number) {
     k.add([
@@ -80,6 +80,32 @@ export function numberOfEnemies(y: number) {
     })
 }
 
+export function playerExperience(y: number) {
+    k.add([
+        k.text("Experience: " + player.experience),
+        k.pos(32, y),
+        k.fixed(),
+        "experience",
+    ]);
+
+    k.onUpdate(() => {
+        k.get("experience")[0].text = "Experience: " + player.experience;
+    })
+}
+
+export function playerLevel(y: number) {
+    k.add([
+        k.text("Level: " + player.level),
+        k.pos(32, y),
+        k.fixed(),
+        "level",
+    ]);
+
+    k.onUpdate(() => {
+        k.get("level")[0].text = "Level: " + player.level;
+    })
+}
+
 export function displayDebugInfo() {
     const debugFunctions = [
         mousePosition,
@@ -88,6 +114,8 @@ export function displayDebugInfo() {
         playerHealth,
         playerMaxHealth,
         numberOfEnemies,
+        playerExperience,
+        playerLevel,
     ];
     let y = 32;
 

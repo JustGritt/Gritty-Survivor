@@ -2,7 +2,7 @@ import { k } from "./kaboomContext";
 import { spawnEnemy } from "./entities/enemy";
 import { ENEMY_SPAWN_INTERVAL, MAP_WIDTH, MAP_HEIGHT } from './utils/contants';
 
-import { player, shoot, move, healthBar } from "./entities/player";
+import { player, shoot, move, healthBar, experienceBar } from "./entities/player";
 import { displayDebugInfo } from "./utils/debug";
 
 const newGame = () => {
@@ -11,6 +11,7 @@ const newGame = () => {
     move()
     shoot()
     healthBar()
+    experienceBar()
 
     // Spawn the player in the middle of the map width and height
     player.pos = k.vec2(MAP_WIDTH / 2, MAP_HEIGHT / 2)
