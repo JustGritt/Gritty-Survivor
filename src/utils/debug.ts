@@ -1,5 +1,5 @@
 import { k } from "../kaboomContext";
-import { player, experienceBar } from '../entities/player';
+import { player } from '../entities/player';
 
 export function mousePosition(y: number) {
     k.add([
