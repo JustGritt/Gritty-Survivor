@@ -133,6 +133,33 @@ export const healthBar = () => {
 }
 
 // ==============================
+// Handle experience
+// ==============================
+
+export const experienceBar = () => {
+	// Initialize experience bar (100% width, 10 height, yellow color)
+	const experienceBar = k.add([
+		k.rect(k.width(), 10),
+		k.pos(0, 0),
+		k.fixed(),
+		k.color(255, 255, 0),
+		"experienceBar",
+	]);
+
+	k.onUpdate(() => {
+		experienceBar.width = player.experience * (k.width() / 100)
+	});
+
+	k.loop(1, () => {
+		// player.experience += 10;
+		if(player.experience >= 100) {
+			player.level++;
+			player.experience = 0;
+		}
+	});
+}
+
+// ==============================
 // Events
 // ==============================
 
