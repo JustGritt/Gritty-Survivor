@@ -11,7 +11,7 @@ export function increaseXP(amount: number = EXP_PER_KILL) {
         player.experience = 0;
 
         // player.setMaxHP(player.maxHP() + 10);
-        player.heal(player.maxHP() ?? 0);
+        // player.heal(player.maxHP() ?? 0);
     }
 }
 
