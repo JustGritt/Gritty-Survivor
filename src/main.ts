@@ -1,5 +1,5 @@
 import { k } from "./kaboomContext";
-import { addEnemy } from "./entities/enemy";
+import { spawnEnemy } from "./entities/enemy";
 import { ENEMY_SPAWN_INTERVAL, MAP_WIDTH, MAP_HEIGHT } from './utils/contants';
 
 import { player, shoot, move, healthBar } from "./entities/player";
@@ -54,9 +54,8 @@ k.scene("game", () => {
     k.loadSprite("background", "scene/map.png")
     k.add([
         k.sprite("background"),
-        k.pos(MAP_WIDTH / 2, MAP_HEIGHT / 2),
-        // 100% width and height
-        k.scale(MAP_WIDTH / 1000, MAP_HEIGHT / 1000),
+        k.pos(0, 0),
+        k.scale(MAP_WIDTH / 600, MAP_HEIGHT / 600),
         k.z(-1),
     ])
 
@@ -65,7 +64,7 @@ k.scene("game", () => {
 
     // Spawn enemies
     k.loop(ENEMY_SPAWN_INTERVAL, () => {
-        addEnemy()
+        spawnEnemy()
     })
 
     k.onUpdate(() => {

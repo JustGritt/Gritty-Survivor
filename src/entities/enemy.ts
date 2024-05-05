@@ -1,23 +1,25 @@
 import { k } from "../kaboomContext";
 import { player } from "./player";
-import { increaseScore } from "../utils/score";
 import { ENEMY_HEALTH, ENEMY_SPEED, ENEMY_MAX_COUNT } from '../utils/contants';
-import { increaseXP } from "../utils/experience";
 
 k.loadSprite("enemy", "./sprites/ghosty.png");
 
-let enemyCount = 0;
-export function addEnemy() {
-    if (k.get("enemy").length >= ENEMY_MAX_COUNT) return
-
+function setSpawnLocation() {
     let position;
     do {
         position = player.pos.add(k.vec2(k.rand(-k.width(), k.width()), k.rand(-k.height(), k.height())));
     } while (k.camPos().sub(position).len() < k.width() / 2);
 
+    return position;
+}
+
+export function spawnEnemy() {
+    // Quick exit if we have reached the max number of enemies
+    if (k.get("enemy").length >= ENEMY_MAX_COUNT) return;
+
     const enemy = k.add([
         k.sprite("enemy"),
-        k.pos(position),
+        k.pos(setSpawnLocation()),
         k.area(),
         k.anchor("center"),
         k.state("move", [ "idle", "move" ]),
@@ -28,13 +30,34 @@ export function addEnemy() {
         }
     ]);
 
-    const healthBar = enemy.add([
-        k.rect(40, 8),
-        k.pos(-20, -40),
+    // ==============================
+    // Handle health
+    // ==============================
+
+    const healthBar = k.add([
+        k.rect(50, 8),
+        k.pos(-25, -40),
         k.anchor('left'),
         k.color(0, 255, 0),
-        "healthBar"
+        "healthBar",
+        {
+            visible: false,
+        }
     ]);
+
+    k.onUpdate(() => {
+        // Hide health bar if player is at full health
+        if(enemy.health === enemy.maxHealth) {
+            healthBar.width = 0;
+        }
+
+        // Update health bar of enemy
+        healthBar.pos = enemy.pos.add(k.vec2(-25, -40));
+    });
+
+    // ==============================
+    // States
+    // ==============================
 
     enemy.onStateEnter("idle", async () => {
         await k.wait(0.5)
@@ -52,29 +75,30 @@ export function addEnemy() {
         enemy.move(dir.scale(ENEMY_SPEED))
     })
 
+    // ==============================
+    // Collision
+    // ==============================
+
     enemy.onCollide("bullet", (bullet) => {
         k.destroy(bullet)
-        enemy.health--;
-        healthBar.width = (enemy.health / enemy.maxHealth) * 40;
+        enemy.health -= 10;
 
-
-        if (enemy.health / enemy.maxHealth > 0.7) {
-            healthBar.color = k.rgb(0, 255, 0);
-        } else if (enemy.health / enemy.maxHealth > 0.25) {
-            healthBar.color = k.rgb(255, 255, 0);
-        } else {
-            healthBar.color = k.rgb(255, 0, 0);
-        }
-
+        // Destroy enemy if health is 0
         if (enemy.health <= 0) {
             k.destroy(enemy)
-            k.addKaboom(bullet.pos)
-            enemyCount--;
-            increaseXP()
-            increaseScore()
+            k.addKaboom(enemy.pos)
+        }
+
+        // Update enemy health bar
+        healthBar.width = (enemy.health / enemy.maxHealth) * 50;
+        if(enemy.health / enemy.maxHealth > 0.5) {
+            healthBar.color = k.Color.GREEN;
+        } else if(enemy.health / enemy.maxHealth > 0.25) {
+            healthBar.color = k.Color.YELLOW;
+        } else {
+            healthBar.color = k.Color.RED;
         }
     })
 
-    enemyCount++;
-    return enemy
+    return enemy;
 }

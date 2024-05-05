@@ -16,7 +16,7 @@ export const BULLET_EXPIRATION = 5000;
 
 // Enemies
 export const ENEMY_SPEED = 80;
-export const ENEMY_MAX_COUNT = 50;
+export const ENEMY_MAX_COUNT = 25;
 export const ENEMY_SPAWN_INTERVAL = 0.5;
 export const ENEMY_HEALTH = 30;
 
