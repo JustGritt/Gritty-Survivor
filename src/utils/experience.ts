@@ -1,5 +1,5 @@
 import { k } from "../kaboomContext";
-import { player } from "../entity/player";
+import { player } from "../entities/player";
 import { EXP_PER_KILL } from "./contants";
 
 export function increaseXP(amount: number = EXP_PER_KILL) {

@@ -3,7 +3,6 @@ import { player } from "./player";
 import { increaseScore } from "../utils/score";
 import { ENEMY_HEALTH, ENEMY_SPEED, ENEMY_MAX_COUNT } from '../utils/contants';
 import { increaseXP } from "../utils/experience";
-import { initHealthBar } from "../utils/health";
 
 k.loadSprite("enemy", "./sprites/ghosty.png");
 
@@ -22,31 +21,20 @@ export function addEnemy() {
         k.area(),
         k.anchor("center"),
         k.state("move", [ "idle", "move" ]),
-        k.health(ENEMY_HEALTH),
         "enemy",
+        {
+            health: ENEMY_HEALTH,
+            maxHealth: ENEMY_HEALTH
+        }
     ]);
 
-    const enemyHealthBar = initHealthBar(enemy, 50);
-
-    // const healthBar = enemy.add([
-    //     k.rect(40, 8),
-    //     k.pos(-20, -40),
-    //     k.anchor('left'),
-    //     k.color(0, 255, 0),
-    //     "healthBar"
-    // ]);
-
-    function hurtEnemy(amount: number) {
-        k.addKaboom(enemy.pos)
-
-        if (enemy.hp() <= 0) {
-            // player.destroy();
-            return
-        }
-        enemy.hurt(amount);
-        // Update health bar width and color
-        // updateHealthBar(enemyHealthBar, amount);
-    }
+    const healthBar = enemy.add([
+        k.rect(40, 8),
+        k.pos(-20, -40),
+        k.anchor('left'),
+        k.color(0, 255, 0),
+        "healthBar"
+    ]);
 
     enemy.onStateEnter("idle", async () => {
         await k.wait(0.5)
@@ -66,9 +54,19 @@ export function addEnemy() {
 
     enemy.onCollide("bullet", (bullet) => {
         k.destroy(bullet)
+        enemy.health--;
+        healthBar.width = (enemy.health / enemy.maxHealth) * 40;
 
-        hurtEnemy(10)
-        if (enemy.hp() <= 0) {
+
+        if (enemy.health / enemy.maxHealth > 0.7) {
+            healthBar.color = k.rgb(0, 255, 0);
+        } else if (enemy.health / enemy.maxHealth > 0.25) {
+            healthBar.color = k.rgb(255, 255, 0);
+        } else {
+            healthBar.color = k.rgb(255, 0, 0);
+        }
+
+        if (enemy.health <= 0) {
             k.destroy(enemy)
             k.addKaboom(bullet.pos)
             enemyCount--;
