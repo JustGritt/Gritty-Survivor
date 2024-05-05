@@ -67,6 +67,19 @@ export function playerMaxHealth(y: number) {
     })
 }
 
+export function numberOfEnemies(y: number) {
+    k.add([
+        k.text("Number of enemies: " + k.get("enemy").length),
+        k.pos(32, y),
+        k.fixed(),
+        "numberOfEnemies",
+    ]);
+
+    k.onUpdate(() => {
+        k.get("numberOfEnemies")[0].text = "Number of enemies: " + k.get("enemy").length;
+    })
+}
+
 export function displayDebugInfo() {
     const debugFunctions = [
         mousePosition,
@@ -74,6 +87,7 @@ export function displayDebugInfo() {
         playerPosition,
         playerHealth,
         playerMaxHealth,
+        numberOfEnemies,
     ];
     let y = 32;
 
