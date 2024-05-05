@@ -1,9 +1,25 @@
 import { k } from "./kaboomContext";
 import { addEnemy } from "./entities/enemy";
-import { ENEMY_SPAWN_INTERVAL } from './utils/contants';
+import { ENEMY_SPAWN_INTERVAL, MAP_WIDTH, MAP_HEIGHT } from './utils/contants';
 
 import { player, shoot, move, healthBar } from "./entities/player";
 import { displayDebugInfo } from "./utils/debug";
+
+const newGame = () => {
+    // Handle player
+    k.add(player)
+    move()
+    shoot()
+    healthBar()
+
+    // Spawn the player in the middle of the map width and height
+    player.pos = k.vec2(MAP_WIDTH / 2, MAP_HEIGHT / 2)
+    player.health = 100
+    player.level = 1
+    player.experience = 0
+
+    k.camPos(player.pos)
+}
 
 // Menu scene
 k.scene("menu", () => {
@@ -33,17 +49,24 @@ k.scene("menu", () => {
 
 // Game scene
 k.scene("game", () => {
+
+    // Background
+    k.loadSprite("background", "scene/map.png")
+    k.add([
+        k.sprite("background"),
+        k.pos(MAP_WIDTH / 2, MAP_HEIGHT / 2),
+        // 100% width and height
+        k.scale(MAP_WIDTH / 1000, MAP_HEIGHT / 1000),
+        k.z(-1),
+    ])
+
     // Handle player
-    k.add(player)
-    move()
-    shoot()
-    healthBar()
+    newGame()
 
     // Spawn enemies
     k.loop(ENEMY_SPAWN_INTERVAL, () => {
         addEnemy()
     })
-
 
     k.onUpdate(() => {
         k.onKeyDown("escape", () => {
@@ -89,4 +112,4 @@ function start() {
 }
 
 start()
-k.debug.inspect = true
+// k.debug.inspect = true
