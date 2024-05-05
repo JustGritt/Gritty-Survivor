@@ -1,6 +1,6 @@
 import { k } from "../kaboomContext";
 import { cameraFollow } from '../utils/camera';
-import { PLAYER_SPEED, BULLET_SPEED, BULLET_COOLDOWN, BULLET_EXPIRATION } from '../utils/contants';
+import { MAP_WIDTH, MAP_HEIGHT, PLAYER_SPEED, PLAYER_HEALING_FACTOR, PLAYER_HEALING_INTERVAL, BULLET_SPEED, BULLET_COOLDOWN, BULLET_EXPIRATION } from '../utils/contants';
 
 k.loadSprite("player", "./sprites/bean.png");
 
@@ -61,23 +61,31 @@ export function shoot() {
 
 export const move = () => {
     k.onKeyDown("z", () => {
-        player.move(0, -player.speed);
-		cameraFollow();
+        if (player.pos.y > 0) {
+            player.move(0, -player.speed);
+            cameraFollow();
+        }
     });
 
     k.onKeyDown("q", () => {
-        player.move(-player.speed, 0);
-		cameraFollow();
+        if (player.pos.x > 0) {
+            player.move(-player.speed, 0);
+            cameraFollow();
+        }
     });
 
     k.onKeyDown("s", () => {
-        player.move(0, player.speed);
-		cameraFollow();
+        if (player.pos.y < MAP_HEIGHT - player.height) {
+            player.move(0, player.speed);
+            cameraFollow();
+        }
     });
 
     k.onKeyDown("d", () => {
-        player.move(player.speed, 0);
-		cameraFollow();
+        if (player.pos.x < MAP_WIDTH - player.width) {
+            player.move(player.speed, 0);
+            cameraFollow();
+        }
     });
 }
 
@@ -85,17 +93,42 @@ export const move = () => {
 // Handle health
 // ==============================
 
+let lastHitTime = 0;
 export const healthBar = () => {
 	const healthBar = k.add([
 		k.rect(100, 10),
 		k.pos(player.pos.x - 50, player.pos.y - 50),
 		k.color(0, 255, 0),
-		k.fixed(),
 		"healthBar",
+		{
+			visible: false,
+		}
 	]);
 
 	k.onUpdate(() => {
+		healthBar.pos = player.pos.add(-50, -50);
 		healthBar.width = (player.health / player.maxHealth) * 100;
+
+		// Hide health bar if player is at full health
+		if(player.health === player.maxHealth) {
+			healthBar.width = 0;
+		}
+
+		// Update health bar color
+		if (player.health / player.maxHealth > 0.5) {
+			healthBar.color = k.Color.GREEN;
+		} else if (player.health / player.maxHealth > 0.25) {
+			healthBar.color = k.Color.YELLOW;
+		} else {
+			healthBar.color = k.Color.RED;
+		}
+	});
+
+	// Heal player
+	k.loop(1, () => {
+		if(player.health < player.maxHealth && Date.now() - lastHitTime > PLAYER_HEALING_INTERVAL) {
+			player.health += PLAYER_HEALING_FACTOR;
+		}
 	});
 }
 
@@ -106,4 +139,15 @@ export const healthBar = () => {
 player.onCollide("enemy", () => {
 	k.addKaboom(player.pos)
 	player.health -= 10;
+	lastHitTime = Date.now();
 })
+
+k.onUpdate(() => {
+	const enemies = k.get("enemy");
+	enemies.forEach((enemy: any) => {
+		if (player.isColliding(enemy)) {
+			k.addKaboom(player.pos)
+			player.health -= 10;
+		}
+	});
+});
