@@ -4,6 +4,7 @@ import { ENEMY_SPAWN_INTERVAL, MAP_WIDTH, MAP_HEIGHT } from './utils/contants';
 
 import { player, shoot, move, healthBar, experienceBar } from "./entities/player";
 import { displayDebugInfo } from "./utils/debug";
+import { isPaused, pause, resume } from "./utils/pause";
 
 const newGame = () => {
     // Handle player
@@ -65,13 +66,24 @@ k.scene("game", () => {
 
     // Spawn enemies
     k.loop(ENEMY_SPAWN_INTERVAL, () => {
-        spawnEnemy()
+        if(!isPaused) {
+            spawnEnemy()
+        }
     })
+
 
     k.onUpdate(() => {
         k.onKeyDown("escape", () => {
             k.go("menu")
         });
+
+        if(k.isKeyPressed("p")) {
+            if(isPaused) {
+                resume()
+            } else {
+                pause()
+            }
+        }
 
         if(player.health <= 0) {
             k.go("gameOver")

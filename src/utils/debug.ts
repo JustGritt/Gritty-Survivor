@@ -1,5 +1,6 @@
 import { k } from "../kaboomContext";
 import { player } from '../entities/player';
+import { experienceCap } from '../utils/experience';
 
 export function mousePosition(y: number) {
     k.add([
@@ -106,6 +107,19 @@ export function playerLevel(y: number) {
     })
 }
 
+export function playerExperienceCap(y: number) {
+    k.add([
+        k.text("Experience cap: " + experienceCap),
+        k.pos(32, y),
+        k.fixed(),
+        "experienceCap",
+    ]);
+
+    k.onUpdate(() => {
+        k.get("experienceCap")[0].text = "Experience cap: " + experienceCap;
+    })
+}
+
 export function displayDebugInfo() {
     const debugFunctions = [
         mousePosition,
@@ -116,6 +130,7 @@ export function displayDebugInfo() {
         numberOfEnemies,
         playerExperience,
         playerLevel,
+        playerExperienceCap
     ];
     let y = 32;
 
