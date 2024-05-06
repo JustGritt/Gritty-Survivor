@@ -120,7 +120,7 @@ k.scene("gameOver", () => {
 })
 
 function start() {
-	k.go("menu");
+    k.go("menu");
 }
 
 start()

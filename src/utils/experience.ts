@@ -1,6 +1,5 @@
 import { k } from "../kaboomContext";
 import { player } from "../entities/player";
-import { EXP_PER_KILL } from "./contants";
 import { pause, resume } from "./pause";
 
 // ==============================
@@ -35,7 +34,7 @@ export const experienceBar = () => {
 // Functions
 // ==============================
 
-export function increaseXP(amount: number = EXP_PER_KILL) {
+export function increaseXP(amount: number) {
     player.experience += amount;
     if (player.experience >= experienceCap) {
         levelUp();
@@ -60,9 +59,18 @@ export function levelUpScreen() {
         "levelUpScreen",
     ]);
 
+    k.add([
+        k.text("Level up!"),
+        k.pos(k.width() / 2, k.height() / 2 - 100),
+        k.anchor("center"),
+        k.fixed(),
+        k.scale(2),
+        k.color(255, 255, 255),
+        "levelUpScreen",
+    ]);
+
     k.wait(3, () => {
         k.get("levelUpScreen").forEach(g => g.destroy());
         resume();
     });
-
 }
