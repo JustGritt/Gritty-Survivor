@@ -120,17 +120,32 @@ export function playerExperienceCap(y: number) {
     })
 }
 
+export function displayEnemyType(y: number) {
+    k.add([
+        k.text("Number of enemies: " + k.get("enemy").length),
+        k.pos(32, y),
+        k.fixed(),
+        "enemyTypes",
+    ]);
+
+    k.onUpdate(() => {
+        k.get("enemyTypes")[0].text = "Snakes: " + k.get("snake").length + " Octopuses: " + k.get("octopus").length + " Ewes: " + k.get("ewe").length + " Ram: " + k.get("ram").length;
+    })
+}
+
+
 export function displayDebugInfo() {
     const debugFunctions = [
-        mousePosition,
-        shootingAngle,
+        // mousePosition,
+        // shootingAngle,
         playerPosition,
         playerHealth,
         playerMaxHealth,
-        numberOfEnemies,
-        playerExperience,
         playerLevel,
-        playerExperienceCap
+        playerExperience,
+        playerExperienceCap,
+        numberOfEnemies,
+        displayEnemyType,
     ];
     let y = 32;
 

@@ -1,34 +1,60 @@
 import { k } from "../kaboomContext";
 import { player } from "./player";
-import { ENEMY_HEALTH, ENEMY_SPEED, ENEMY_MAX_COUNT } from '../utils/contants';
 import { increaseXP } from '../utils/experience';
+import { ENEMY_MAX_COUNT, ENEMY_OCTOPUS, ENEMY_SNAKE, ENEMY_EWE, ENEMY_RAM } from '../utils/contants';
 
-k.loadSprite("enemy", "./sprites/ghosty.png");
+k.loadSprite("octopus", "./sprites/octopus.png");
+k.loadSprite("snake", "./sprites/snake.png");
+k.loadSprite("ewe", "./sprites/ewe.png");
+k.loadSprite("ram", "./sprites/ram.png");
+
+// ==============================
+// Functions
+// ==============================
 
 function setSpawnLocation() {
     let position;
     do {
-        position = player.pos.add(k.vec2(k.rand(-k.width(), k.width()), k.rand(-k.height(), k.height())));
+        position = player.pos.add(k.vec2(k.rand(-k.width(), k.width()), k.rand(-k.height(), k.height())))
     } while (k.camPos().sub(position).len() < k.width() / 2);
-
     return position;
 }
+
+function setEnemyType() {
+    const enemyTypes = [
+        { type: ENEMY_RAM, spawnChance: ENEMY_RAM.spawnChance },
+        { type: ENEMY_EWE, spawnChance: ENEMY_EWE.spawnChance },
+        { type: ENEMY_OCTOPUS, spawnChance: ENEMY_OCTOPUS.spawnChance },
+        { type: ENEMY_SNAKE, spawnChance: ENEMY_SNAKE.spawnChance }
+    ];
+
+    enemyTypes.sort((a, b) => a.spawnChance - b.spawnChance);
+    const roll = Math.random();
+    const enemyType = enemyTypes.find(enemy => roll < enemy.spawnChance);
+    return enemyType ? enemyType.type : enemyTypes[enemyTypes.length - 1].type;
+}
+
+// ==============================
+// Handle enemy
+// ==============================
 
 export function spawnEnemy() {
     // Quick exit if we have reached the max number of enemies
     if (k.get("enemy").length >= ENEMY_MAX_COUNT) return;
 
+    const enemyType = setEnemyType();
     const enemy = k.add([
-        k.sprite("enemy"),
+        k.sprite(enemyType.sprite),
         k.pos(setSpawnLocation()),
         k.area(),
         k.anchor("center"),
         k.state("move", [ "idle", "move", "pause" ]),
         "enemy",
+        enemyType.sprite,
         {
-            health: ENEMY_HEALTH,
-            maxHealth: ENEMY_HEALTH,
-            speed: ENEMY_SPEED,
+            health: enemyType.health,
+            maxHealth: enemyType.health,
+            speed: enemyType.speed,
         }
     ]);
 
@@ -62,7 +88,7 @@ export function spawnEnemy() {
     // ==============================
 
     enemy.onStateEnter("pause", () => {
-        enemy.speed = 0; // Assuming enemy has a speed property
+        enemy.speed = 0;
     })
 
     enemy.onStateEnter("idle", async () => {
@@ -80,9 +106,9 @@ export function spawnEnemy() {
     })
 
     enemy.onStateUpdate("move", () => {
-        if (!player.exists() || enemy.state === "pause") return
+        if (!player.exists()) return
         const dir = player.pos.sub(enemy.pos).unit()
-        enemy.move(dir.scale(ENEMY_SPEED))
+        enemy.move(dir.scale(enemyType.speed))
     })
 
     // ==============================
@@ -99,7 +125,7 @@ export function spawnEnemy() {
             k.addKaboom(enemy.pos)
 
             // Update score and experience
-            increaseXP(10);
+            increaseXP(enemyType.experience);
         }
 
         // Update enemy health bar

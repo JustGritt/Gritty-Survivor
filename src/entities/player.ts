@@ -1,24 +1,40 @@
 import { k } from "../kaboomContext";
 import { cameraFollow } from '../utils/camera';
-import { MAP_WIDTH, MAP_HEIGHT, PLAYER_SPEED, PLAYER_HEALING_FACTOR, PLAYER_HEALING_INTERVAL, BULLET_SPEED, BULLET_COOLDOWN, BULLET_EXPIRATION } from '../utils/contants';
-import { experienceCap } from '../utils/experience';
+import { MAP_WIDTH, MAP_HEIGHT } from '../utils/contants';
 
-k.loadSprite("player", "./sprites/bean.png");
+k.loadSprite("player", "./sprites/turtle.png");
+
+// ==============================
+// Player stats
+// ==============================
+
+export let PLAYER_SPEED = 200;
+export let PLAYER_HEALTH = 100;
+export let PLAYER_MAX_HEALTH = 100;
+export let PLAYER_HEALING_FACTOR = 1;
+export let PLAYER_HEALING_INTERVAL = 3000;
+
+export let BULLET_SPEED = 400;
+export let BULLET_COOLDOWN = 1000;
+export let BULLET_EXPIRATION = 5000;
+
+// ==============================
+// Handle health
+// ==============================
 
 // Initialize player
 export const player = k.add([
 	k.sprite("player"),
 	k.pos(k.center()),
-	k.rotate(0),
 	k.area(),
 	k.anchor("center"),
 	"player",
 	{
 		level: 1,
 		experience: 0,
-		health: 100,
-		maxHealth: 100,
 		speed: PLAYER_SPEED,
+		health: PLAYER_HEALTH,
+		maxHealth: PLAYER_MAX_HEALTH,
 	}
 ]);
 
@@ -36,8 +52,7 @@ export function shoot() {
 				k.pos(player.pos),
 				k.area(),
 				k.move(angle, BULLET_SPEED),
-				k.outline(1),
-				k.color(0, 0, 1),
+				k.color(0, 0, 0),
 				"bullet",
 			]);
 			lastShotTime = currentTime;
@@ -134,26 +149,6 @@ export const healthBar = () => {
 }
 
 // ==============================
-// Handle experience
-// ==============================
-
-export const experienceBar = () => {
-	// Initialize experience bar (100% width, 10 height, yellow color)
-	const experienceBar = k.add([
-		k.rect(k.width(), 10),
-		k.pos(0, 0),
-		k.fixed(),
-		k.color(255, 255, 0),
-		"experienceBar",
-	]);
-
-	// Update experience bar width
-	k.onUpdate(() => {
-		experienceBar.width = player.experience * (k.width() / experienceCap)
-	});
-}
-
-// ==============================
 // Events
 // ==============================
 
@@ -164,8 +159,8 @@ player.onCollide("enemy", () => {
 })
 
 k.onUpdate(() => {
-	const enemies = k.get("enemy");
-	enemies.forEach((enemy: any) => {
+	// If player is colliding with an enemy
+	k.get("enemy").forEach((enemy: any) => {
 		if (player.isColliding(enemy)) {
 			k.addKaboom(player.pos)
 			player.health -= 10;

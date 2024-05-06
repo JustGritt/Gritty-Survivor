@@ -2,7 +2,8 @@ import { k } from "./kaboomContext";
 import { spawnEnemy } from "./entities/enemy";
 import { ENEMY_SPAWN_INTERVAL, MAP_WIDTH, MAP_HEIGHT } from './utils/contants';
 
-import { player, shoot, move, healthBar, experienceBar } from "./entities/player";
+import { player, shoot, move, healthBar } from "./entities/player"
+import { experienceBar } from "./utils/experience";
 import { displayDebugInfo } from "./utils/debug";
 import { isPaused, pause, resume } from "./utils/pause";
 
@@ -71,7 +72,6 @@ k.scene("game", () => {
         }
     })
 
-
     k.onUpdate(() => {
         k.onKeyDown("escape", () => {
             k.go("menu")
@@ -120,7 +120,7 @@ k.scene("gameOver", () => {
 })
 
 function start() {
-	k.go("menu");
+    k.go("menu");
 }
 
 start()

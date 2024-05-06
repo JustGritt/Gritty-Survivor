@@ -1,6 +1,5 @@
 import { k } from "../kaboomContext";
-import { player } from "../entities/player";
-import { PLAYER_SPEED } from "./contants";
+import { player, PLAYER_SPEED } from "../entities/player";
 
 export let isPaused = false;
 export function pause() {
@@ -41,3 +40,4 @@ export function resume() {
         enemy.enterState(state);
     });
 }
+
