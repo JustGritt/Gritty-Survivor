@@ -122,14 +122,14 @@ export function playerExperienceCap(y: number) {
 
 export function displayDebugInfo() {
     const debugFunctions = [
-        mousePosition,
-        shootingAngle,
+        // mousePosition,
+        // shootingAngle,
         playerPosition,
         playerHealth,
         playerMaxHealth,
         numberOfEnemies,
-        playerExperience,
         playerLevel,
+        playerExperience,
         playerExperienceCap
     ];
     let y = 32;

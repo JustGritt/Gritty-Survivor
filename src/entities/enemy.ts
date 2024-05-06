@@ -3,7 +3,11 @@ import { player } from "./player";
 import { ENEMY_HEALTH, ENEMY_SPEED, ENEMY_MAX_COUNT } from '../utils/contants';
 import { increaseXP } from '../utils/experience';
 
-k.loadSprite("enemy", "./sprites/ghosty.png");
+k.loadSprite("enemy", "./sprites/octopus.png");
+
+// ==============================
+// Functions
+// ==============================
 
 function setSpawnLocation() {
     let position;
@@ -13,6 +17,10 @@ function setSpawnLocation() {
 
     return position;
 }
+
+// ==============================
+// Handle enemy
+// ==============================
 
 export function spawnEnemy() {
     // Quick exit if we have reached the max number of enemies
@@ -62,7 +70,7 @@ export function spawnEnemy() {
     // ==============================
 
     enemy.onStateEnter("pause", () => {
-        enemy.speed = 0; // Assuming enemy has a speed property
+        enemy.speed = 0;
     })
 
     enemy.onStateEnter("idle", async () => {
@@ -80,7 +88,7 @@ export function spawnEnemy() {
     })
 
     enemy.onStateUpdate("move", () => {
-        if (!player.exists() || enemy.state === "pause") return
+        if (!player.exists()) return
         const dir = player.pos.sub(enemy.pos).unit()
         enemy.move(dir.scale(ENEMY_SPEED))
     })
