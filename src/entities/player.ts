@@ -1,6 +1,7 @@
 import { k } from "../kaboomContext";
 import { cameraFollow } from '../utils/camera';
 import { MAP_WIDTH, MAP_HEIGHT, PLAYER_SPEED, PLAYER_HEALING_FACTOR, PLAYER_HEALING_INTERVAL, BULLET_SPEED, BULLET_COOLDOWN, BULLET_EXPIRATION } from '../utils/contants';
+import { experienceCap } from '../utils/experience';
 
 k.loadSprite("player", "./sprites/bean.png");
 
@@ -146,16 +147,9 @@ export const experienceBar = () => {
 		"experienceBar",
 	]);
 
+	// Update experience bar width
 	k.onUpdate(() => {
-		experienceBar.width = player.experience * (k.width() / 100)
-	});
-
-	k.loop(1, () => {
-		// player.experience += 10;
-		if(player.experience >= 100) {
-			player.level++;
-			player.experience = 0;
-		}
+		experienceBar.width = player.experience * (k.width() / experienceCap)
 	});
 }
 

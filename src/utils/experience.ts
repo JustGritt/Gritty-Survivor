@@ -2,16 +2,15 @@ import { k } from "../kaboomContext";
 import { player } from "../entities/player";
 import { EXP_PER_KILL } from "./contants";
 
+export let experienceCap = 100;
 export function increaseXP(amount: number = EXP_PER_KILL) {
     player.experience += amount;
-    exprienceBar.width = (player.experience / 100) * k.width();
+    exprienceBar.width = (player.experience / experienceCap) * k.width();
 
-    if (player.experience >= 100) {
+    if (player.experience >= experienceCap) {
         player.level++;
         player.experience = 0;
-
-        // player.setMaxHP(player.maxHP() + 10);
-        // player.heal(player.maxHP() ?? 0);
+        experienceCap = Math.floor(experienceCap * 1.5);
     }
 }
 

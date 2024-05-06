@@ -1,6 +1,7 @@
 import { k } from "../kaboomContext";
 import { player } from "./player";
 import { ENEMY_HEALTH, ENEMY_SPEED, ENEMY_MAX_COUNT } from '../utils/contants';
+import { increaseXP } from '../utils/experience';
 
 k.loadSprite("enemy", "./sprites/ghosty.png");
 
@@ -22,11 +23,12 @@ export function spawnEnemy() {
         k.pos(setSpawnLocation()),
         k.area(),
         k.anchor("center"),
-        k.state("move", [ "idle", "move" ]),
+        k.state("move", [ "idle", "move", "pause" ]),
         "enemy",
         {
             health: ENEMY_HEALTH,
-            maxHealth: ENEMY_HEALTH
+            maxHealth: ENEMY_HEALTH,
+            speed: ENEMY_SPEED,
         }
     ]);
 
@@ -59,18 +61,26 @@ export function spawnEnemy() {
     // States
     // ==============================
 
+    enemy.onStateEnter("pause", () => {
+        enemy.speed = 0; // Assuming enemy has a speed property
+    })
+
     enemy.onStateEnter("idle", async () => {
         await k.wait(0.5)
-        enemy.enterState("move")
+        if (enemy.state !== "pause") {
+            enemy.enterState("move")
+        }
     })
 
     enemy.onStateEnter("move", async () => {
         await k.wait(2)
-        enemy.enterState("idle")
+        if (enemy.state !== "pause") {
+            enemy.enterState("idle")
+        }
     })
 
     enemy.onStateUpdate("move", () => {
-        if (!player.exists()) return
+        if (!player.exists() || enemy.state === "pause") return
         const dir = player.pos.sub(enemy.pos).unit()
         enemy.move(dir.scale(ENEMY_SPEED))
     })
@@ -89,7 +99,7 @@ export function spawnEnemy() {
             k.addKaboom(enemy.pos)
 
             // Update score and experience
-            player.experience += 10;
+            increaseXP(10);
         }
 
         // Update enemy health bar
