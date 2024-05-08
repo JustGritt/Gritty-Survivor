@@ -11,6 +11,7 @@ yarn-error.log*
 # Ignore built files
 dist/
 build/
+tmp/
 
 # Ignore environment-specific files
 .env
