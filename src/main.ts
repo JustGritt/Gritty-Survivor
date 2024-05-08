@@ -1,11 +1,10 @@
 import { k } from "./kaboomContext";
 import { spawnEnemy } from "./entities/enemy";
 import { ENEMY_SPAWN_INTERVAL, MAP_WIDTH, MAP_HEIGHT } from './utils/contants';
-
 import { player, shoot, move, healthBar } from "./entities/player"
+import { isPaused, pause, resume } from "./utils/pause";
 import { experienceBar } from "./utils/experience";
 import { displayDebugInfo } from "./utils/debug";
-import { isPaused, pause, resume } from "./utils/pause";
 
 const newGame = () => {
     // Handle player
@@ -78,11 +77,7 @@ k.scene("game", () => {
         });
 
         if(k.isKeyPressed("p")) {
-            if(isPaused) {
-                resume()
-            } else {
-                pause()
-            }
+            isPaused ? resume() : pause()
         }
 
         if(player.health <= 0) {

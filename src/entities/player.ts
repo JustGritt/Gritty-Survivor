@@ -12,9 +12,10 @@ export let PLAYER_SPEED = 200;
 export let PLAYER_HEALTH = 100;
 export let PLAYER_MAX_HEALTH = 100;
 export let PLAYER_HEALING_FACTOR = 1;
-export let PLAYER_HEALING_INTERVAL = 3000;
+export let PLAYER_HEALING_INTERVAL = 10000;
 
 export let BULLET_SPEED = 400;
+export let BULLET_DAMAGE = 10;
 export let BULLET_COOLDOWN = 1000;
 export let BULLET_EXPIRATION = 5000;
 
@@ -32,9 +33,13 @@ export const player = k.add([
 	{
 		level: 1,
 		experience: 0,
-		speed: PLAYER_SPEED,
 		health: PLAYER_HEALTH,
-		maxHealth: PLAYER_MAX_HEALTH,
+		max_health: PLAYER_MAX_HEALTH,
+		damage: BULLET_DAMAGE,
+		movement_speed: PLAYER_SPEED,
+		reload_interval: BULLET_COOLDOWN,
+		healing_factor : PLAYER_HEALING_FACTOR,
+		healing_interval: PLAYER_HEALING_INTERVAL,
 	}
 ]);
 
@@ -46,14 +51,17 @@ let lastShotTime = 0;
 export function shoot() {
     const shootBullet = (angle: number) => {
 		const currentTime = Date.now();
-		if (currentTime - lastShotTime >= BULLET_COOLDOWN) {
+		if (currentTime - lastShotTime >= player.reload_interval) {
 			const bullet = k.add([
-				k.rect(12, 12),
+				k.rect(12, 12, {radius: 6}),
 				k.pos(player.pos),
 				k.area(),
 				k.move(angle, BULLET_SPEED),
-				k.color(0, 0, 0),
 				"bullet",
+				{
+					damage: player.damage,
+					critical_damage: player.damage * 2,
+				}
 			]);
 			lastShotTime = currentTime;
 
@@ -78,28 +86,28 @@ export function shoot() {
 export const move = () => {
     k.onKeyDown("z", () => {
         if (player.pos.y > 0) {
-            player.move(0, -player.speed);
+            player.move(0, -player.movement_speed);
             cameraFollow();
         }
     });
 
     k.onKeyDown("q", () => {
         if (player.pos.x > 0) {
-            player.move(-player.speed, 0);
+            player.move(-player.movement_speed, 0);
             cameraFollow();
         }
     });
 
     k.onKeyDown("s", () => {
         if (player.pos.y < MAP_HEIGHT - player.height) {
-            player.move(0, player.speed);
+            player.move(0, player.movement_speed);
             cameraFollow();
         }
     });
 
     k.onKeyDown("d", () => {
         if (player.pos.x < MAP_WIDTH - player.width) {
-            player.move(player.speed, 0);
+            player.move(player.movement_speed, 0);
             cameraFollow();
         }
     });
@@ -123,17 +131,17 @@ export const healthBar = () => {
 
 	k.onUpdate(() => {
 		healthBar.pos = player.pos.add(-50, -50);
-		healthBar.width = (player.health / player.maxHealth) * 100;
+		healthBar.width = (player.health / player.max_health) * 100;
 
 		// Hide health bar if player is at full health
-		if(player.health === player.maxHealth) {
+		if(player.health >= player.max_health) {
 			healthBar.width = 0;
 		}
 
 		// Update health bar color
-		if (player.health / player.maxHealth > 0.5) {
+		if (player.health / player.max_health > 0.5) {
 			healthBar.color = k.Color.GREEN;
-		} else if (player.health / player.maxHealth > 0.25) {
+		} else if (player.health / player.max_health > 0.25) {
 			healthBar.color = k.Color.YELLOW;
 		} else {
 			healthBar.color = k.Color.RED;
@@ -142,8 +150,8 @@ export const healthBar = () => {
 
 	// Heal player
 	k.loop(1, () => {
-		if(player.health < player.maxHealth && Date.now() - lastHitTime > PLAYER_HEALING_INTERVAL) {
-			player.health += PLAYER_HEALING_FACTOR;
+		if(player.health < player.max_health && Date.now() - lastHitTime > player.healing_interval) {
+			player.health = Math.min(player.health + player.healing_factor, player.max_health);
 		}
 	});
 }
@@ -152,18 +160,8 @@ export const healthBar = () => {
 // Events
 // ==============================
 
-player.onCollide("enemy", () => {
+player.onCollide("enemy", (currentEnemy) => {
 	k.addKaboom(player.pos)
-	player.health -= 10;
+	player.health -= currentEnemy.damage;
 	lastHitTime = Date.now();
 })
-
-k.onUpdate(() => {
-	// If player is colliding with an enemy
-	k.get("enemy").forEach((enemy: any) => {
-		if (player.isColliding(enemy)) {
-			k.addKaboom(player.pos)
-			player.health -= 10;
-		}
-	});
-});

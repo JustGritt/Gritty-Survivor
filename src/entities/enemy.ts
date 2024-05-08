@@ -47,6 +47,7 @@ export function spawnEnemy() {
         k.sprite(enemyType.sprite),
         k.pos(setSpawnLocation()),
         k.area(),
+        k.rotate(0),
         k.anchor("center"),
         k.state("move", [ "idle", "move", "pause" ]),
         "enemy",
@@ -55,6 +56,8 @@ export function spawnEnemy() {
             health: enemyType.health,
             maxHealth: enemyType.health,
             speed: enemyType.speed,
+            damage: enemyType.damage,
+            experience: enemyType.experience,
         }
     ]);
 
@@ -122,6 +125,7 @@ export function spawnEnemy() {
         // Destroy enemy if health is 0
         if (enemy.health <= 0) {
             k.destroy(enemy)
+            k.destroy(healthBar)
             k.addKaboom(enemy.pos)
 
             // Update score and experience

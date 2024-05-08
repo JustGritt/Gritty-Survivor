@@ -57,14 +57,79 @@ export function playerHealth(y: number) {
 
 export function playerMaxHealth(y: number) {
     k.add([
-        k.text("Player max health: " + player.maxHealth),
+        k.text("Player max health: " + player.max_health),
         k.pos(32, y),
         k.fixed(),
         "playerMaxHealth",
     ]);
 
     k.onUpdate(() => {
-        k.get("playerMaxHealth")[0].text = "Player max health: " + player.maxHealth;
+        k.get("playerMaxHealth")[0].text = "Player max health: " + player.max_health;
+    })
+}
+
+export function playerDamage(y: number) {
+    k.add([
+        k.text("Player damage: " + player.damage),
+        k.pos(32, y),
+        k.fixed(),
+        "playerDamage",
+    ]);
+
+    k.onUpdate(() => {
+        k.get("playerDamage")[0].text = "Player damage: " + player.damage;
+    })
+}
+
+export function playerMovementSpeed(y: number) {
+    k.add([
+        k.text("Player speed: " + player.movement_speed),
+        k.pos(32, y),
+        k.fixed(),
+        "playerMovementSpeed",
+    ]);
+
+    k.onUpdate(() => {
+        k.get("playerMovementSpeed")[0].text = "Player speed: " + player.movement_speed;
+    })
+}
+
+export function playerReloadSpeed(y: number) {
+    k.add([
+        k.text("Player reload speed: " + player.reload_interval),
+        k.pos(32, y),
+        k.fixed(),
+        "playerReloadSpeed",
+    ]);
+
+    k.onUpdate(() => {
+        k.get("playerReloadSpeed")[0].text = "Player reload speed: " + player.reload_interval;
+    })
+}
+
+export function playerHealingFactor(y: number) {
+    k.add([
+        k.text("Player healing factor: " + player.healing_factor),
+        k.pos(32, y),
+        k.fixed(),
+        "playerHealingFactor",
+    ]);
+
+    k.onUpdate(() => {
+        k.get("playerHealingFactor")[0].text = "Player healing factor: " + player.healing_factor;
+    })
+}
+
+export function playerHealingInterval(y: number) {
+    k.add([
+        k.text("Player healing interval: " + player.healing_interval),
+        k.pos(32, y),
+        k.fixed(),
+        "playerHealingInterval",
+    ]);
+
+    k.onUpdate(() => {
+        k.get("playerHealingInterval")[0].text = "Player healing interval: " + player.healing_interval;
     })
 }
 
@@ -141,6 +206,11 @@ export function displayDebugInfo() {
         playerPosition,
         playerHealth,
         playerMaxHealth,
+        playerDamage,
+        playerMovementSpeed,
+        playerReloadSpeed,
+        playerHealingFactor,
+        playerHealingInterval,
         playerLevel,
         playerExperience,
         playerExperienceCap,

@@ -16,7 +16,7 @@ export function pause() {
     ]);
 
     // Prevent the player from moving
-    player.speed = 0;
+    player.movement_speed = 0;
 
     // Prevent the enemies from moving
     const enemies = k.get("enemy");
@@ -32,7 +32,7 @@ export function resume() {
     k.get("pause").forEach(p => p.destroy());
 
     // Resume player movement
-    player.speed = PLAYER_SPEED;
+    player.movement_speed = PLAYER_SPEED;
 
     // Resume the enemies state
     k.get("enemy").forEach(enemy => {
